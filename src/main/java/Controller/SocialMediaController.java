@@ -1,7 +1,16 @@
 package Controller;
 
+import Model.Account;
+import Model.Message;
+import Service.AccountsService;
+import Service.MessageService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+
+import java.util.List;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -9,6 +18,12 @@ import io.javalin.http.Context;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
+    AccountsService accountsService;
+    MessageService messageService;
+    public SocialMediaController(){
+        this.accountsService=new AccountsService();
+        this.messageService=new MessageService();
+    }
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
      * suite must receive a Javalin object from this method.
@@ -16,8 +31,15 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
-        app.get("example-endpoint", this::exampleHandler);
-
+        app.post("/register", this::postUserHandler);
+        app.get("/login", this::getUserHandler);
+        app.post("/messages", this::postMessageHandler);
+        app.get("/messages", this::getMessageHandler);
+        app.get("/messages/{message_id}", this::getMessageById);
+        app.delete("/messages/{message_id}", this::deleteMessageById);
+        app.patch("/messages/{message_id}", this::patchMessageById);
+        app.get("/accounts/{account_id}/messages", this::getUserMessages);
+        app.start(8080);
         return app;
     }
 
@@ -25,9 +47,50 @@ public class SocialMediaController {
      * This is an example handler for an example endpoint.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void exampleHandler(Context context) {
-        context.json("sample text");
+    private void postUserHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
+        Account user = om.readValue(ctx.body(), Account.class);
+        Account newUser = accountsService.addUser(user);
+        if(newUser!=null){
+            ctx.json(om.writeValueAsString(newUser));
+            ctx.status(200);
+        }else{
+            ctx.status(400);
+        }
     }
 
+    private void getUserHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
+        Account user = om.readValue(ctx.body(), Account.class);
+        if(accountsService.verifyUser(user)!=null){
+            ctx.json(om.writeValueAsString(user));
+            ctx.status(200);
+        }else{
+            ctx.status(401);
+        }
+    }
 
+    private void postMessageHandler(Context ctx) throws JsonProcessingException{
+        
+    }
+
+    public void getMessageHandler(Context ctx){
+
+    }
+
+    public void getMessageById(Context ctx){
+
+    }
+
+    public void deleteMessageById(Context ctx){
+
+    }
+
+    public void patchMessageById(Context ctx){
+
+    }
+
+    public void getUserMessages(Context ctx){
+        
+    }
 }
