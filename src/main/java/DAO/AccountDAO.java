@@ -30,24 +30,6 @@ public class AccountDAO {
         return null;
     }
 
-    public String getUserByName(String name){
-        Connection con = ConnectionUtil.getConnection();
-        String ac="";
-        try{
-            String sql = "SELECT username FROM account WHERE username = ?;";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                ac = rs.getString("username");
-                return ac;
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
     public Account verifyUser(Account account){
         Connection con = ConnectionUtil.getConnection();
         try{

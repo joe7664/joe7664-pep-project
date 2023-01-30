@@ -10,9 +10,6 @@ import java.util.List;
 public class MessageDAO {
     public Message createMessage(Message message){
         Connection con = ConnectionUtil.getConnection();
-        if(message.getMessage_text() == null || message.getMessage_text() == "" || message.getMessage_text().length() >= 255){
-            return null;
-        }
         try{
             String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?, ?, ?) WHERE account.account_id IN ?;";
             PreparedStatement ps = con.prepareStatement(sql);
@@ -49,12 +46,12 @@ public class MessageDAO {
         return messages;
     }
     
-    public Message getMessageById(Message message){
+    public Message getMessageById(int id){
         Connection con = ConnectionUtil.getConnection();
         try{
             String sql = "SELECT * FROM message WHERE message_id = ?;";
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, message.getMessage_id());
+            ps.setInt(1, id);
 
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
@@ -118,13 +115,13 @@ public class MessageDAO {
         return null;
     }
     
-    public List<Message> getMessagesByUser(Message message){
+    public List<Message> getMessagesByUser(int id){
         Connection con = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
         try{
             String sql = "SELECT * FROM message WHERE posted_by = ?;";
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, message.getPosted_by());
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
                 Message m = new Message(rs.getInt("message_id"),
