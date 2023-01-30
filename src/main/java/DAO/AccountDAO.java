@@ -10,34 +10,40 @@ import java.util.List;
 
 public class AccountDAO {
     public Account insertAccount(Account account){
-        if(account.getUsername()!="" && account.getPassword().length() >= 4){
-            Connection con = ConnectionUtil.getConnection();
-            try{
-                String accs = "SELECT username FROM socialmedia WHERE username = ?;";
-                PreparedStatement prep = con.prepareStatement(accs);
-                ResultSet res = prep.executeQuery();
-                while(res.next()){
-                    String name = res.getString("username");
-                    if(name==account.getUsername()){
-                        return null;
-                    }
-                }
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            String sql = "INSERT INTO account (username, password) VALUES (?, ?);";
+            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, account.getUsername());
+            ps.setString(2, account.getPassword());
+            ps.executeUpdate();
 
-                String sql = "INSERT INTO socialmedia (username, password) VALUES (?, ?);";
-                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, account.getUsername());
-                ps.setString(2, account.getPassword());
-                ps.executeUpdate();
-
-                ResultSet rs = ps.getGeneratedKeys();
-                if(rs.next()){
-                    int gen_account_id = (int) rs.getLong(1);
-                    return new Account(gen_account_id, account.getUsername(), account.getPassword());
-                }
+            ResultSet rs = ps.getGeneratedKeys();
+            while(rs.next()){
+                int gen_account_id = (int) rs.getLong(1);
+                return new Account(gen_account_id, account.getUsername(), account.getPassword());
+            }
             
             }catch(SQLException e){
                 System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public String getUserByName(String name){
+        Connection con = ConnectionUtil.getConnection();
+        String ac="";
+        try{
+            String sql = "SELECT username FROM account WHERE username = ?;";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                ac = rs.getString("username");
+                return ac;
             }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -45,7 +51,7 @@ public class AccountDAO {
     public Account verifyUser(Account account){
         Connection con = ConnectionUtil.getConnection();
         try{
-            String sql = "SELECT * FROM socialmedia WHERE username = ?;";
+            String sql = "SELECT * FROM account WHERE username = ?;";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, account.getUsername());
             ResultSet rs = ps.executeQuery();

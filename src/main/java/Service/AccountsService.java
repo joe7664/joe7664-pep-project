@@ -11,7 +11,12 @@ public class AccountsService {
         accountDAO = new AccountDAO();
     }
     public Account addUser(Account user) {
-        return accountDAO.insertAccount(user);
+        if(user.getUsername()=="" || user.getPassword().length() < 4 || user.getUsername().equals(accountDAO.getUserByName(user.getUsername()))){
+            return null;
+        }
+        else{
+            return accountDAO.insertAccount(user);
+        }
     }
     public Account verifyUser(Account user){
         return accountDAO.verifyUser(user);
