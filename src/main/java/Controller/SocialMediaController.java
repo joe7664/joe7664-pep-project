@@ -52,10 +52,8 @@ public class SocialMediaController {
         ObjectMapper om = new ObjectMapper();
         Account user = om.readValue(ctx.body(), Account.class);
         Account newUser = accountsService.addUser(user);
-        ctx.contentType("application/json");
         if(newUser!=null){
             ctx.json(om.writeValueAsString(newUser));
-            ctx.status(200);
         }else{
             ctx.status(400);
         }
@@ -66,7 +64,6 @@ public class SocialMediaController {
         Account user = om.readValue(ctx.body(), Account.class);
         if(accountsService.verifyUser(user)!=null){
             ctx.json(om.writeValueAsString(user));
-            ctx.status(200);
         }else{
             ctx.status(401);
         }
@@ -77,51 +74,62 @@ public class SocialMediaController {
         Message message = om.readValue(ctx.body(), Message.class);
         if(messageService.createMessage(message) != null){
             ctx.json(om.writeValueAsString(message));
-            ctx.status(200);
         }else{
             ctx.status(400);
         }
     }
 
     public void getAllMessagesHandler(Context ctx) throws JsonProcessingException{
-        ObjectMapper om = new ObjectMapper();
-        List<Message> messages = messageService.getAllMessages();
-        ctx.json(om.writeValueAsString(messages));
-        ctx.status(200);
+        //ObjectMapper om = new ObjectMapper();
+        //List<Message> messages = messageService.getAllMessages();
+        ctx.json(messageService.getAllMessages());//om.writeValueAsString(messages));
     }
 
     public void getMessageById(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
-        String x = ctx.pathParam("message_id");
-        Message message = om.readValue(ctx.body(), Message.class);
-        ctx.json(om.writeValueAsString(message));
-        ctx.status(200);
+        String id_input = ctx.pathParam("message_id");
+        try{
+            int id = Integer.parseInt(id_input);
+            Message message = messageService.getMessageById(id);
+            ctx.json(om.writeValueAsString(message));
+            ctx.status(200);
+        }catch(NumberFormatException e){
+            ctx.status(200);
+        }
     }
 
     public void deleteMessageById(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
-        Message message = om.readValue(ctx.body(), Message.class);
+        String id_input = ctx.pathParam("message_id");
+        int id = Integer.parseInt(id_input);
+        Message message = messageService.deleteMessageById(id);
         ctx.json(om.writeValueAsString(message));
-        ctx.status(200);
     }
 
     public void patchMessageById(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
         Message message = om.readValue(ctx.body(), Message.class);
-        if(messageService.updateMessageById(message) != null){
-            ctx.json(om.writeValueAsString(message));
-            ctx.status(200);
+        String id_input = ctx.pathParam("message_id");
+        int id = Integer.parseInt(id_input);
+        Message patchedMessage = messageService.patchMessageById(id, message);
+        if(patchedMessage != null){
+            ctx.json(om.writeValueAsString(patchedMessage));
         }
         else{
             ctx.status(400);
         }
+        /*try{
+            ctx.json(om.writeValueAsString(patchedMessage));
+            ctx.status(200);
+        }catch(NumberFormatException e){
+            ctx.status(400);
+        }*/
     }
 
     public void getUserMessages(Context ctx) throws JsonProcessingException{
-        ObjectMapper om = new ObjectMapper();
-        Account user = om.readValue(ctx.body(), Account.class);
-        List<Message> messages = messageService.getMessagesByUser(user);
-        ctx.json(om.writeValueAsString(messages));
-        ctx.status(200);
+        String user_input = ctx.pathParam("account_id");
+        int user = Integer.parseInt(user_input);
+        //List<Message> messages = messageService.getMessagesByUser(user);
+        ctx.json(messageService.getMessagesByUser(user));//messages);
     }
 }

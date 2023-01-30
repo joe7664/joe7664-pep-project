@@ -93,9 +93,6 @@ public class MessageDAO {
     
     public Message editMessage(Message message){
         Connection con = ConnectionUtil.getConnection();
-        if(message.getMessage_text() == "" || message.getMessage_text().length() > 255){
-            return null;
-        }
         try{
             String sql = "UPDATE message SET message_text = ? WHERE message_id = ?;";
             PreparedStatement ps = con.prepareStatement(sql);

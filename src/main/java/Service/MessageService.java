@@ -30,29 +30,29 @@ public class MessageService {
         return messageDAO.getAllMessages();
     }
 
-    public Message getMessageById(Message message){
-        if(message.getMessage_id() == (messageDAO.getMessageById(message.getMessage_id()).getMessage_id())){
+    public Message getMessageById(int id){
+        if(id == (messageDAO.getMessageById(id).getMessage_id())){
             return null;
         }
         else{
-            return messageDAO.getMessageById(message.getMessage_id());
+            return messageDAO.getMessageById(id);
         }
     }
 
-    public Message deleteMessageById(Message message){
-        return messageDAO.getMessageById(message.getMessage_id());
+    public Message deleteMessageById(int id){
+        return messageDAO.getMessageById(id);
     }
 
-    public Message updateMessageById(Message message){
-        if(message.getMessage_id() != (messageDAO.getMessageById(message.getMessage_id()).getMessage_id()) || message.getMessage_text().length()>255 || message.getMessage_text() == ""){
+    public Message patchMessageById(int id, Message message){
+        if(id != (messageDAO.getMessageById(id).getMessage_id()) || message.getMessage_text().length()>255 || message.getMessage_text() == ""){
             return null;
         }
         else{
-            return messageDAO.editMessage(message);
+            return messageDAO.editMessage(messageDAO.getMessageById(id));
         }
     }
 
-    public List<Message> getMessagesByUser(Account account){
-        return messageDAO.getMessagesByUser(account.getAccount_id());
+    public List<Message> getMessagesByUser(int id){
+        return messageDAO.getMessagesByUser(id);
     }
 }
