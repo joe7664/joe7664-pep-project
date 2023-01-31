@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonpCharacterEscapes;
 import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import DAO.AccountDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -34,7 +35,7 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::postUserHandler);
-        app.get("/login", this::getUserHandler);
+        app.post("/login", this::postLoginUserHandler);
         app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageById);
@@ -59,11 +60,12 @@ public class SocialMediaController {
         }
     }
 
-    private void getUserHandler(Context ctx) throws JsonProcessingException{
+    private void postLoginUserHandler(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
         Account user = om.readValue(ctx.body(), Account.class);
-        if(accountsService.verifyUser(user)!=null){
-            ctx.json(om.writeValueAsString(user));
+        Account login = accountsService.verifyUser(user);
+        if(login != null){
+            ctx.json(om.writeValueAsString(login));
         }else{
             ctx.status(401);
         }
@@ -111,25 +113,18 @@ public class SocialMediaController {
         Message message = om.readValue(ctx.body(), Message.class);
         String id_input = ctx.pathParam("message_id");
         int id = Integer.parseInt(id_input);
-        Message patchedMessage = messageService.patchMessageById(id, message);
+        Message patchedMessage = messageService.patchMessageById(id, message.getMessage_text());
         if(patchedMessage != null){
             ctx.json(om.writeValueAsString(patchedMessage));
         }
         else{
             ctx.status(400);
         }
-        /*try{
-            ctx.json(om.writeValueAsString(patchedMessage));
-            ctx.status(200);
-        }catch(NumberFormatException e){
-            ctx.status(400);
-        }*/
     }
 
     public void getUserMessages(Context ctx) throws JsonProcessingException{
         String user_input = ctx.pathParam("account_id");
         int user = Integer.parseInt(user_input);
-        //List<Message> messages = messageService.getMessagesByUser(user);
-        ctx.json(messageService.getMessagesByUser(user));//messages);
+        ctx.json(messageService.getMessagesByUser(user));
     }
 }

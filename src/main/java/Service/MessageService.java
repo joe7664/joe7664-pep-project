@@ -3,14 +3,17 @@ package Service;
 import Model.Account;
 import Model.Message;
 import DAO.MessageDAO;
+import DAO.AccountDAO;
 
 import java.util.List;
 
 public class MessageService {
     public MessageDAO messageDAO;
+    public AccountDAO accountDAO;
 
     public MessageService(){
         messageDAO = new MessageDAO();
+        accountDAO = new AccountDAO();
     }
 
     public MessageService(MessageDAO messageDAO){
@@ -18,12 +21,10 @@ public class MessageService {
     }
 
     public Message createMessage(Message message){
-        if(message.getMessage_text() == "" || message.getMessage_text().length() >= 255){
+        if(message.getMessage_text() == "" || message.getMessage_text().length() >= 255 || accountDAO.getUserById(message.getPosted_by()) == null){
             return null;
         }
-        else{
-            return messageDAO.createMessage(message);
-        }
+        return messageDAO.createMessage(message);
     }
 
     public List<Message> getAllMessages(){
@@ -32,23 +33,26 @@ public class MessageService {
 
     public Message getMessageById(int id){
         if(id == (messageDAO.getMessageById(id).getMessage_id())){
-            return null;
+            return messageDAO.getMessageById(id);
         }
         else{
-            return messageDAO.getMessageById(id);
+            return null;
         }
     }
 
     public Message deleteMessageById(int id){
-        return messageDAO.getMessageById(id);
+        if(messageDAO.getMessageById(id) != null){
+            return messageDAO.deleteMessage(id);
+        }
+        return null;
     }
 
-    public Message patchMessageById(int id, Message message){
-        if(id != (messageDAO.getMessageById(id).getMessage_id()) || message.getMessage_text().length()>255 || message.getMessage_text() == ""){
+    public Message patchMessageById(int id, String message){
+        if(message.length() >= 255 || message == "" || messageDAO.getMessageById(id) == null){
             return null;
         }
         else{
-            return messageDAO.editMessage(messageDAO.getMessageById(id));
+            return messageDAO.editMessage(id, message);
         }
     }
 

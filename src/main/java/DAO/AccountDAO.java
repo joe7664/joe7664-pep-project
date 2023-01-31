@@ -23,31 +23,66 @@ public class AccountDAO {
                 int gen_account_id = (int) rs.getLong(1);
                 return new Account(gen_account_id, account.getUsername(), account.getPassword());
             }
-            
-            }catch(SQLException e){
-                System.out.println(e.getMessage());
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public Account verifyUser(Account account){
+    public Account getUserById(int id){
         Connection con = ConnectionUtil.getConnection();
         try{
-            String sql = "SELECT * FROM account WHERE username = ?;";
+            String sql = "SELECT * FROM account WHERE account_id = ?;";
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, account.getUsername());
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
                 Account ac = new Account(rs.getInt("account_id"),
                         rs.getString("username"),
                         rs.getString("password"));
-                if(account.getPassword().equals(ac.getPassword())){
-                    return ac;
-                }
+                return ac;
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    public Account getUserByName(String username){
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            String sql = "SELECT * FROM account WHERE username = ?;";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Account ac = new Account(rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("password"));
+                return ac;
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public List<Account> getAllAccounts(){
+        List<Account> list = new ArrayList<Account>();
+        Connection con = ConnectionUtil.getConnection();
+        try{
+            String sql = "SELECT * FROM account;";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Account ac = new Account(rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("password"));
+                list.add(ac);
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 }
