@@ -41,10 +41,14 @@ public class MessageService {
     }
 
     public Message deleteMessageById(int id){
-        if(messageDAO.getMessageById(id) != null){
-            return messageDAO.deleteMessage(id);
+        Message m = messageDAO.getMessageById(id);
+        if(m != null){
+            messageDAO.deleteMessage(id);
+            return m;
         }
-        return null;
+        else{
+            return null;
+        }
     }
 
     public Message patchMessageById(int id, String message){
@@ -52,7 +56,8 @@ public class MessageService {
             return null;
         }
         else{
-            return messageDAO.editMessage(id, message);
+            messageDAO.editMessage(id, message);
+            return messageDAO.getMessageById(id);
         }
     }
 

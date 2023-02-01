@@ -20,7 +20,7 @@ public class AccountDAO {
 
             ResultSet rs = ps.getGeneratedKeys();
             while(rs.next()){
-                int gen_account_id = (int) rs.getLong(1);
+                int gen_account_id = rs.getInt("account_id");
                 return new Account(gen_account_id, account.getUsername(), account.getPassword());
             }
         }catch(SQLException e){

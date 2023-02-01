@@ -74,46 +74,42 @@ public class SocialMediaController {
     private void postMessageHandler(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
         Message message = om.readValue(ctx.body(), Message.class);
-        if(messageService.createMessage(message) != null){
-            ctx.json(om.writeValueAsString(message));
+        Message newMessage = messageService.createMessage(message);
+        if(newMessage != null){
+            ctx.json(om.writeValueAsString(newMessage));
         }else{
             ctx.status(400);
         }
     }
 
     public void getAllMessagesHandler(Context ctx) throws JsonProcessingException{
-        //ObjectMapper om = new ObjectMapper();
-        //List<Message> messages = messageService.getAllMessages();
-        ctx.json(messageService.getAllMessages());//om.writeValueAsString(messages));
+        ctx.json(messageService.getAllMessages());
     }
 
     public void getMessageById(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
         String id_input = ctx.pathParam("message_id");
-        try{
-            int id = Integer.parseInt(id_input);
-            Message message = messageService.getMessageById(id);
-            ctx.json(om.writeValueAsString(message));
-            ctx.status(200);
-        }catch(NumberFormatException e){
-            ctx.status(200);
-        }
+        int id = Integer.parseInt(id_input);
+        Message message = messageService.getMessageById(id);
+        ctx.json(om.writeValueAsString(message));
     }
 
     public void deleteMessageById(Context ctx) throws JsonProcessingException{
-        ObjectMapper om = new ObjectMapper();
         String id_input = ctx.pathParam("message_id");
         int id = Integer.parseInt(id_input);
         Message message = messageService.deleteMessageById(id);
-        ctx.json(om.writeValueAsString(message));
+        if(message != null){
+            ctx.json(message);
+        }
     }
 
     public void patchMessageById(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
         Message message = om.readValue(ctx.body(), Message.class);
+        String m = message.getMessage_text();
         String id_input = ctx.pathParam("message_id");
         int id = Integer.parseInt(id_input);
-        Message patchedMessage = messageService.patchMessageById(id, message.getMessage_text());
+        Message patchedMessage = messageService.patchMessageById(id, m);
         if(patchedMessage != null){
             ctx.json(om.writeValueAsString(patchedMessage));
         }
