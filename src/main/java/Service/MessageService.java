@@ -1,6 +1,5 @@
 package Service;
 
-import Model.Account;
 import Model.Message;
 import DAO.MessageDAO;
 import DAO.AccountDAO;
@@ -32,23 +31,20 @@ public class MessageService {
     }
 
     public Message getMessageById(int id){
-        if(id == (messageDAO.getMessageById(id).getMessage_id())){
-            return messageDAO.getMessageById(id);
+        Message message = messageDAO.getMessageById(id);
+        if(message != null){
+            return message;
         }
-        else{
-            return null;
-        }
+        return null;
     }
 
     public Message deleteMessageById(int id){
-        Message m = messageDAO.getMessageById(id);
-        if(m != null){
+        Message message = messageDAO.getMessageById(id);
+        if(message != null){
             messageDAO.deleteMessage(id);
-            return m;
+            return message;
         }
-        else{
-            return null;
-        }
+        return null;
     }
 
     public Message patchMessageById(int id, String message){

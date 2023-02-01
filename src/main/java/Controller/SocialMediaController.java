@@ -9,11 +9,8 @@ import com.fasterxml.jackson.core.JsonpCharacterEscapes;
 import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import DAO.AccountDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-
-import java.util.List;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -82,11 +79,11 @@ public class SocialMediaController {
         }
     }
 
-    public void getAllMessagesHandler(Context ctx) throws JsonProcessingException{
+    private void getAllMessagesHandler(Context ctx) throws JsonProcessingException{
         ctx.json(messageService.getAllMessages());
     }
 
-    public void getMessageById(Context ctx) throws JsonProcessingException{
+    private void getMessageById(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
         String id_input = ctx.pathParam("message_id");
         int id = Integer.parseInt(id_input);
@@ -94,16 +91,16 @@ public class SocialMediaController {
         ctx.json(om.writeValueAsString(message));
     }
 
-    public void deleteMessageById(Context ctx) throws JsonProcessingException{
+    private void deleteMessageById(Context ctx) throws JsonProcessingException{
         String id_input = ctx.pathParam("message_id");
         int id = Integer.parseInt(id_input);
-        Message message = messageService.deleteMessageById(id);
+        Message message = messageService.deleteMessageById(id);;
         if(message != null){
             ctx.json(message);
         }
     }
 
-    public void patchMessageById(Context ctx) throws JsonProcessingException{
+    private void patchMessageById(Context ctx) throws JsonProcessingException{
         ObjectMapper om = new ObjectMapper();
         Message message = om.readValue(ctx.body(), Message.class);
         String m = message.getMessage_text();
@@ -118,7 +115,7 @@ public class SocialMediaController {
         }
     }
 
-    public void getUserMessages(Context ctx) throws JsonProcessingException{
+    private void getUserMessages(Context ctx) throws JsonProcessingException{
         String user_input = ctx.pathParam("account_id");
         int user = Integer.parseInt(user_input);
         ctx.json(messageService.getMessagesByUser(user));
