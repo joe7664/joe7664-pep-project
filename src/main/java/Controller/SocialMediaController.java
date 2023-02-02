@@ -51,7 +51,7 @@ public class SocialMediaController {
         Account user = om.readValue(ctx.body(), Account.class);
         Account newUser = accountsService.addUser(user);
         if(newUser!=null){
-            ctx.json(om.writeValueAsString(newUser));
+            ctx.json(newUser);
         }else{
             ctx.status(400);
         }
@@ -62,7 +62,7 @@ public class SocialMediaController {
         Account user = om.readValue(ctx.body(), Account.class);
         Account login = accountsService.verifyUser(user);
         if(login != null){
-            ctx.json(om.writeValueAsString(login));
+            ctx.json(login);
         }else{
             ctx.status(401);
         }
@@ -73,7 +73,7 @@ public class SocialMediaController {
         Message message = om.readValue(ctx.body(), Message.class);
         Message newMessage = messageService.createMessage(message);
         if(newMessage != null){
-            ctx.json(om.writeValueAsString(newMessage));
+            ctx.json(newMessage);
         }else{
             ctx.status(400);
         }
@@ -84,19 +84,21 @@ public class SocialMediaController {
     }
 
     private void getMessageById(Context ctx) throws JsonProcessingException{
-        ObjectMapper om = new ObjectMapper();
         String id_input = ctx.pathParam("message_id");
         int id = Integer.parseInt(id_input);
         Message message = messageService.getMessageById(id);
-        ctx.json(om.writeValueAsString(message));
+        if(message != null){
+            ctx.json(message);
+        }
     }
 
     private void deleteMessageById(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
         String id_input = ctx.pathParam("message_id");
         int id = Integer.parseInt(id_input);
-        Message message = messageService.deleteMessageById(id);;
+        Message message = messageService.deleteMessageById(id);
         if(message != null){
-            ctx.json(message);
+            ctx.json(om.writeValueAsString(message));
         }
     }
 
@@ -108,7 +110,7 @@ public class SocialMediaController {
         int id = Integer.parseInt(id_input);
         Message patchedMessage = messageService.patchMessageById(id, m);
         if(patchedMessage != null){
-            ctx.json(om.writeValueAsString(patchedMessage));
+            ctx.json(patchedMessage);
         }
         else{
             ctx.status(400);

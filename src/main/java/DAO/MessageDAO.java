@@ -64,7 +64,7 @@ public class MessageDAO {
                         rs.getInt("posted_by"),
                         rs.getString("message_text"),
                         rs.getLong("time_posted_epoch"));
-                return m;
+                    return m;
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
